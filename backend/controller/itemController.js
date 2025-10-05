@@ -57,11 +57,19 @@ export const updateStatus = async(req, res) => {
 
 export const claimItem = async (req, res) => {
     try {
+        const { claimantName, claimantContact, claimantId } = req.body;
+        
+        if (!claimantName || !claimantContact) {
+            return res.status(400).json({ message: "Claimant name and contact are required" });
+        }
+        
         const claimedItem = await Item.findByIdAndUpdate(
             req.params.id,
             { 
                 status: "Claimed", 
-                claimantId: req.body.claimantId, 
+                claimantId: claimantId || "anonymous",
+                claimantName: claimantName,
+                claimantContact: claimantContact,
                 dateClaimed: new Date() 
             },
             { new: true }
@@ -71,7 +79,7 @@ export const claimItem = async (req, res) => {
             return res.status(404).json({ message: "Item not found" });
         }
         
-        console.log(`Item claimed: ${claimedItem.title}`);
+        console.log(`Item claimed by ${claimantName}: ${claimedItem.title}`);
         res.json(claimedItem);
     }
     catch(error) {

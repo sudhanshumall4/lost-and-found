@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose"
 import itemRoutes from './routes/itemRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 import cors from "cors"
 import dotenv from "dotenv"
 
@@ -14,6 +15,7 @@ app.use(express.json());
 // Without "/", the path is not correctly registered, and incoming
 // requests to "/api/items" will not be matched.
 app.use("/api/items",itemRoutes);
+app.use("/api/admin",adminRoutes);
 
 console.log("Mongo URI:", process.env.MONGO_URI);
 

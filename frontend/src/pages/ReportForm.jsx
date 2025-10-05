@@ -10,8 +10,19 @@ function ReportForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axios.post("http://localhost:3000/api/items", formData);
-    alert("Item submitted for approval!");
+    try {
+      await axios.post("http://localhost:3000/api/items", formData);
+      alert("Item submitted for approval!");
+      // Clear form after successful submission
+      setFormData({
+        title: "",
+        description: "",
+        type: "lost",
+      });
+    } catch (error) {
+      console.error('Error submitting item:', error);
+      alert('Failed to submit item. Please try again.');
+    }
   };
 
   return (
@@ -26,7 +37,6 @@ function ReportForm() {
               </svg>
             </div>
             <h2 className="text-3xl font-bold text-gray-800 mb-2">Report Item</h2>
-            <p className="text-gray-500">Help us reunite lost items with their owners</p>
           </div>
 
           {/* Form */}
@@ -91,11 +101,6 @@ function ReportForm() {
               Submit for Approval
             </button>
           </form>
-
-          {/* Footer Note */}
-          <p className="text-center text-xs text-gray-500 mt-6">
-            Your submission will be reviewed by our team before being published
-          </p>
         </div>
       </div>
     </div>

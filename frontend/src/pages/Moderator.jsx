@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 function Moderator() {
   const [pending, setPending] = useState([]);
   const [loading, setLoading] = useState(true);
+  
   useEffect(() => {
     fetchPending();
   }, []);
+  
   const fetchPending = () => {
     axios.get("http://localhost:3000/api/items/pending")
       .then(res => {
@@ -18,7 +20,7 @@ function Moderator() {
         setLoading(false);
       });
   };
-
+  
   const handleStatus = async (id, status) => {
     try {
       await axios.patch(`http://localhost:3000/api/items/${id}/status`, { status });
@@ -52,12 +54,10 @@ function Moderator() {
         <h2 className="text-4xl font-extrabold bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent mb-2">
           Moderator Dashboard
         </h2>
-        <p className="text-purple-600 text-lg font-medium">
-          Review and approve pending items
-        </p>
       </div>
 
-      {/* Empty State */}
+
+      {/* Pending Items Content */}
       {pending.length === 0 ? (
         <div className="bg-gradient-to-br from-violet-50 via-purple-50 to-fuchsia-50 rounded-2xl shadow-xl p-12 border border-purple-100 text-center">
           <svg className="w-16 h-16 mx-auto mb-4 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -67,7 +67,7 @@ function Moderator() {
           <p className="text-purple-600">No pending items to review at the moment</p>
         </div>
       ) : (
-        /* Items List */
+        /* Pending Items List */
         <div className="space-y-6">
           {pending.map(item => (
             <div 

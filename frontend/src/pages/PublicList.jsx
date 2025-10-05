@@ -1,9 +1,11 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import ClaimModal from "../components/ClaimModal";
 
 function PublicList() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [claimModal, setClaimModal] = useState({ isOpen: false, item: null });
 
   useEffect(() => {
     fetchItems();
@@ -21,29 +23,27 @@ function PublicList() {
       });
   };
 
-  // CHANGE: The claimItem function has been updated.
-  // A confirmation dialog is now shown to the user before the claim is processed.
-  // This improves the user experience by preventing accidental claims.
-  const claimItem = async (id) => {
-    // Show a confirmation dialog.
-    const isConfirmed = window.confirm(
-      "Are you sure you want to claim this item? This action cannot be undone."
-    );
+  const openClaimModal = (item) => {
+    setClaimModal({ isOpen: true, item });
+  };
 
-    // If the user confirms, proceed with the API call.
-    if (isConfirmed) {
-      try {
-        // In a full-stack application, the claimantId would come from
-        // the logged-in user's session. We use a placeholder here for demonstration.
-        await axios.patch(`http://localhost:3000/api/items/${id}/claim`, {
-          claimantId: "user123"
-        });
-        alert("Item claimed successfully!");
-        fetchItems(); // Refresh the list to reflect the new "Claimed" status.
-      } catch (error) {
-        console.error("Error claiming item:", error);
-        alert("Failed to claim item. Please try again.");
-      }
+  const closeClaimModal = () => {
+    setClaimModal({ isOpen: false, item: null });
+  };
+
+  const handleClaim = async (claimantData) => {
+    try {
+      await axios.patch(`http://localhost:3000/api/items/${claimModal.item._id}/claim`, {
+        claimantName: claimantData.claimantName,
+        claimantContact: claimantData.claimantContact,
+        claimantId: "anonymous"
+      });
+      alert("Item claimed successfully!");
+      fetchItems(); // Refresh the list to reflect the new "Claimed" status.
+    } catch (error) {
+      console.error("Error claiming item:", error);
+      alert(error.response?.data?.message || "Failed to claim item. Please try again.");
+      throw error; // Re-throw to let modal handle loading state
     }
   };
 
@@ -118,10 +118,9 @@ function PublicList() {
                 </div>
 
                 {/* Claim Button or Status */}
-                {/* NO CHANGE: This logic correctly displays the claim button only for "lost" items that are not already claimed. */}
                 {item.type === "lost" && item.status !== "Claimed" && (
                   <button
-                    onClick={() => claimItem(item._id)}
+                    onClick={() => openClaimModal(item)}
                     className="flex items-center gap-2 bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500 text-white font-semibold px-4 py-2 rounded-lg hover:from-violet-600 hover:via-purple-600 hover:to-fuchsia-600 hover:scale-105 active:scale-95 transition-all duration-200 shadow-md hover:shadow-lg text-sm"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -144,6 +143,14 @@ function PublicList() {
           ))}
         </div>
       )}
+      
+      {/* Claim Modal */}
+      <ClaimModal 
+        isOpen={claimModal.isOpen}
+        onClose={closeClaimModal}
+        onClaim={handleClaim}
+        itemTitle={claimModal.item?.title}
+      />
     </div>
   );
 }

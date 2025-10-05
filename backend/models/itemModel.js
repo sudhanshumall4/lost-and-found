@@ -36,6 +36,16 @@ const itemSchema=new mongoose.Schema({
     default: null
   },
 
+  claimantName: {
+    type: String,
+    default: null
+  },
+
+  claimantContact: {
+    type: String,
+    default: null
+  },
+
   dateReported: {
     type: Date,
     default: Date.now
