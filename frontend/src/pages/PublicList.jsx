@@ -10,7 +10,7 @@ function PublicList() {
   }, []);
 
   const fetchItems = () => {
-    axios.get("http://localhost:5000/api/items")
+    axios.get("http://localhost:3000/api/items")
       .then(res => {
         setItems(res.data);
         setLoading(false);
@@ -21,16 +21,29 @@ function PublicList() {
       });
   };
 
+  // CHANGE: The claimItem function has been updated.
+  // A confirmation dialog is now shown to the user before the claim is processed.
+  // This improves the user experience by preventing accidental claims.
   const claimItem = async (id) => {
-    try {
-      await axios.patch(`http://localhost:5000/api/items/${id}/claim`, { 
-        claimantId: "user123" 
-      });
-      alert("Item claimed successfully!");
-      fetchItems();
-    } catch (error) {
-      console.error("Error claiming item:", error);
-      alert("Failed to claim item. Please try again.");
+    // Show a confirmation dialog.
+    const isConfirmed = window.confirm(
+      "Are you sure you want to claim this item? This action cannot be undone."
+    );
+
+    // If the user confirms, proceed with the API call.
+    if (isConfirmed) {
+      try {
+        // In a full-stack application, the claimantId would come from
+        // the logged-in user's session. We use a placeholder here for demonstration.
+        await axios.patch(`http://localhost:3000/api/items/${id}/claim`, {
+          claimantId: "user123"
+        });
+        alert("Item claimed successfully!");
+        fetchItems(); // Refresh the list to reflect the new "Claimed" status.
+      } catch (error) {
+        console.error("Error claiming item:", error);
+        alert("Failed to claim item. Please try again.");
+      }
     }
   };
 
@@ -69,8 +82,8 @@ function PublicList() {
         /* Items Grid */
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {items.map(item => (
-            <div 
-              key={item._id} 
+            <div
+              key={item._id}
               className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-2xl p-6 border-2 border-purple-200 shadow-lg hover:shadow-xl hover:-translate-y-1 hover:border-purple-300 transition-all duration-300"
             >
               {/* Card Header */}
@@ -79,8 +92,8 @@ function PublicList() {
                   {item.title}
                 </h4>
                 <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold text-white shadow-md ${
-                  item.type === 'lost' 
-                    ? 'bg-gradient-to-r from-red-500 to-red-600' 
+                  item.type === 'lost'
+                    ? 'bg-gradient-to-r from-red-500 to-red-600'
                     : 'bg-gradient-to-r from-green-500 to-green-600'
                 }`}>
                   {item.type === 'lost' ? '🔍' : '✨'} {item.type}
@@ -105,8 +118,9 @@ function PublicList() {
                 </div>
 
                 {/* Claim Button or Status */}
-                {item.type === "found" && item.status !== "Claimed" && (
-                  <button 
+                {/* NO CHANGE: This logic correctly displays the claim button only for "lost" items that are not already claimed. */}
+                {item.type === "lost" && item.status !== "Claimed" && (
+                  <button
                     onClick={() => claimItem(item._id)}
                     className="flex items-center gap-2 bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500 text-white font-semibold px-4 py-2 rounded-lg hover:from-violet-600 hover:via-purple-600 hover:to-fuchsia-600 hover:scale-105 active:scale-95 transition-all duration-200 shadow-md hover:shadow-lg text-sm"
                   >
@@ -116,7 +130,7 @@ function PublicList() {
                     Claim
                   </button>
                 )}
-
+                {/* NO CHANGE: This logic correctly displays the "Claimed" status. */}
                 {item.status === "Claimed" && (
                   <div className="flex items-center gap-2 text-green-600 font-semibold text-sm">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -10,7 +10,9 @@ function Moderator() {
   }, []);
 
   const fetchPending = () => {
-    axios.get("http://localhost:5000/api/items/pending")
+    // FIX: The backend server is running on port 3000, not 5000.
+    // The URL has been updated to point to the correct port.
+    axios.get("http://localhost:3000/api/items/pending")
       .then(res => {
         setPending(res.data);
         setLoading(false);
@@ -23,7 +25,9 @@ function Moderator() {
 
   const handleStatus = async (id, status) => {
     try {
-      await axios.patch(`http://localhost:5000/api/items/${id}/status`, { status });
+      // FIX: The backend server is running on port 3000, not 5000.
+      // The URL has been updated to point to the correct port.
+      await axios.patch(`http://localhost:3000/api/items/${id}/status`, { status });
       alert(`Item ${status}!`);
       setPending(pending.filter(item => item._id !== id));
     } catch (error) {
