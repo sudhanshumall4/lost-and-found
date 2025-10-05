@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-
 const itemSchema=new mongoose.Schema({
     title:
     {
@@ -46,10 +45,5 @@ const itemSchema=new mongoose.Schema({
     type: Date
   }
 });
-
-// FIX: The third argument 'traders.users' forces the model to use a collection
-// with that name. This is causing the app to look for items in the wrong
-// collection. Removing it allows Mongoose to correctly use the "items" collection.
 const Item=mongoose.model('Item',itemSchema);
-
 export default Item;
