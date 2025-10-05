@@ -4,14 +4,10 @@ import { useEffect, useState } from "react";
 function Moderator() {
   const [pending, setPending] = useState([]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     fetchPending();
   }, []);
-
   const fetchPending = () => {
-    // FIX: The backend server is running on port 3000, not 5000.
-    // The URL has been updated to point to the correct port.
     axios.get("http://localhost:3000/api/items/pending")
       .then(res => {
         setPending(res.data);
@@ -25,8 +21,6 @@ function Moderator() {
 
   const handleStatus = async (id, status) => {
     try {
-      // FIX: The backend server is running on port 3000, not 5000.
-      // The URL has been updated to point to the correct port.
       await axios.patch(`http://localhost:3000/api/items/${id}/status`, { status });
       alert(`Item ${status}!`);
       setPending(pending.filter(item => item._id !== id));
