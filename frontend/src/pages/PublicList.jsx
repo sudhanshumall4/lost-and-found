@@ -64,9 +64,6 @@ function PublicList() {
         <h2 className="text-4xl font-extrabold bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent mb-2">
           Available Items
         </h2>
-        <p className="text-purple-600 text-lg font-medium">
-          Browse lost and found items
-        </p>
       </div>
 
       {/* Empty State */}
